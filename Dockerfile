@@ -2,43 +2,36 @@
 FROM node:20-alpine AS frontend_build
 WORKDIR /app/frontend
 
-# ставим зависимости
 COPY frontend/package*.json ./
-# если package-lock.json нет — npm ci упадёт. Тогда меняйте на npm install
+# если package-lock.json есть (у вас он есть) — оставляем npm ci
 RUN npm ci
 
-# собираем фронт
 COPY frontend/ ./
 RUN npm run build
 
 
-# ---------- 2) Backend runtime ----------
-FROM python:3.12-slim AS backend
+# ---------- 2) Run backend ----------
+FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-WORKDIR /app/backend
+WORKDIR /app
 
-# системные зависимости (если PostgreSQL)
+# зависимости для python/psycopg (если postgres)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
+    build-essential libpq-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# python зависимости
-COPY backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY backend/requirements.txt /app/backend/requirements.txt
+RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
-# код бэкенда
-COPY backend/ ./
+COPY backend/ /app/backend/
 
-# кладём собранный фронт туда, где Django ждёт dist
-# (у вас в settings есть FRONTEND_DIST = backend/frontend_dist)
-COPY --from=frontend_build /app/frontend/dist ./frontend_dist
+# кладём собранный фронт в место, откуда Django его раздаёт
+COPY --from=frontend_build /app/frontend/dist /app/backend/frontend_dist
 
-# статика django (admin, DRF и т.д.)
-RUN python manage.py collectstatic --noinput
+WORKDIR /app/backend
+RUN python manage.py collectstatic --noinput || true
 
-# миграции можно запускать при старте (простое решение)
 CMD sh -c "python manage.py migrate && gunicorn config.wsgi:application --bind 0.0.0.0:${PORT:-8000}"
