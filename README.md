@@ -1,6 +1,8 @@
 # SilverLady — Silver Jewelry
 
-Production-ready интернет-магазин серебряных украшений (кольца, серьги, комплекты, браслеты, цепочки). Единый репозиторий: Django + DRF (backend + admin) и React + Vite (frontend). В продакшне — одно приложение (Django раздаёт SPA через WhiteNoise).
+Production-ready интернет-магазин серебряных украшений (кольца, серьги, комплекты, браслеты, цепочки).
+Единый репозиторий: Django + DRF (backend + admin) и React + Vite (frontend).
+В продакшне — одно приложение (Django раздаёт SPA через WhiteNoise).
 
 ## Стек
 
