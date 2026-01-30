@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { getProduct, getProducts, getTelegramOrderUrl } from '@/api/client'
 import { addToCart } from '@/store/cart'
-import type { ProductDetail, ProductListItem } from '@/types'
+import type { ProductDetail, ProductListItem, ProductImage } from '@/types'
 import { ProductCard } from '@/components/ProductCard'
 
 export function ProductPage() {
@@ -31,7 +31,7 @@ export function ProductPage() {
         })
       })
       .then((data) => {
-        setSimilar(data.results.filter((p) => p.slug !== slug).slice(0, 4))
+        setSimilar(data.results.filter((p: ProductListItem) => p.slug !== slug).slice(0, 4))
       })
       .catch(() => setProduct(null))
       .finally(() => setLoading(false))
@@ -104,7 +104,7 @@ export function ProductPage() {
           </div>
           {images.length > 1 && (
             <div className="flex gap-2 overflow-x-auto pb-2">
-              {images.map((img, i) => (
+              {images.map((img: ProductImage, i: number) => (
                 <button
                   key={img.id}
                   type="button"
@@ -115,7 +115,7 @@ export function ProductPage() {
                       : 'border-transparent hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
-                  <img src={img.image} alt="" className="w-full h-full object-cover" />
+                  <img src={img.image ?? undefined} alt="" className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

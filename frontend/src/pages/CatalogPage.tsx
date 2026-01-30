@@ -293,7 +293,7 @@ export function CatalogPage() {
     (updates: Record<string, string | number | undefined>) => {
       const next = new URLSearchParams(searchParams)
       Object.entries(updates).forEach(([key, value]) => {
-        if (value === undefined || value === '' || value === false) {
+        if (value === undefined || value === '') {
           next.delete(key)
         } else {
           next.set(key, String(value))

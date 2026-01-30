@@ -6,7 +6,7 @@ import { getCart, setQuantity, removeFromCart, getCartTotal, subscribe } from '@
 import type { CartItem } from '@/types'
 
 export function CartPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [items, setItems] = useState<CartItem[]>([])
   const [total, setTotal] = useState(0)
 
